@@ -100,7 +100,57 @@ def loadIrisData(filename, testSetSize):
     return xTrain, yTrain, xTest, yTest
 
 
+#testSetSize = 20
+#filename = 'iris.txt'
 
+#xTrain, yTrain, xTest, yTest = loadIrisData(filename, testSetSize)
+
+
+
+# Initialize Parameters
+# ----------------
+def initialize(dims):
+    # dims is a list stating the number of neurons per layer
+    # W and b are dictionaries containing the parameters
+    parameters = {}
+    
+    for i in range(len(dims)):
+        if i > 0:
+            parameters["W" + str(i)] = np.random.randn(dims[i], dims[i - 1])*0.01
+            parameters["b" + str(i)] = np.zeros((dims[i], 1))
+
+    return parameters
+
+#parameters = initialize([4, 3])
+
+
+
+# Forward Prop
+# ----------------
+def forward(A_prev, W, b):
+    Z = np.dot(W, A_prev) + b
+#    cache = {"A_prev": A_prev, "W": W, "b": b}  # used to compute derivatives
+    
+    return Z#, cache
+
+
+
+# Activation
+# ----------------
+def activation(Z, activateFcn):
+    if activateFcn == 'sigmoid':
+        A = 1/(1 + np.exp(-Z))
+    elif activateFcn == 'tanh':
+        A = 2/(1 + np.exp(-2*Z)) - 1
+    elif activateFcn == 'leakyRelu':
+        A = max(0.01*Z, Z)
+    elif activateFcn == 'unity':
+        A = Z
+    else:
+        # assumed Rectifier Linear Unit (ReLU)
+        A = max(0, Z)
+        
+    return A
     
     
     
