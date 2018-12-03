@@ -154,7 +154,97 @@ def activation(Z, activateFcn):
     
     
     
+    # Softmax
+# ----------------
+def softmax(Z):
+    # AL is a vector output of the last layer
+    t = np.exp(Z)
+    tot = np.sum(np.asarray(t), axis=0, keepdims=True)
+    A = np.multiply(t, 1/tot)
     
+    return A
+
+
+
+# Cost Fcn
+# ----------------
+def cost(A, y):
+    # A is the output vector of the softmax fcn (y_hat)
+    Loss = np.sum(np.multiply(y, np.log(A)))
+    # compute cost from loss function
+    m = y.shape[1]
+    J = -1/m*Loss
+    # gradient of cost, needed for backprop
+#    dJ = np.multiply(y, -1/A) + np.multiply(1 - y, 1/(1 - A))  # dJ/dA
+#    dZL = A - y  # dA/dZL for softmax eqn
+    
+    return J #, dJ, dZL
+
+
+
+# Backprop
+# ----------------    
+def backprop(parameters, cache, activateFcn, X, Y):
+    
+    # nested helper fcn to find derivative of activation
+    def fcnDerivative(Z, Fcn):
+        if activateFcn == 'sigmoid':
+            dgZ = np.multiply(activation(Z, 'sigmoid'),(1 - activation(Z, 'sigmoid')))
+        elif activateFcn == 'tanh':
+            dgZ = np.power((1 - activation(Z, 'tanh')), 2)
+        elif activateFcn == 'leakyRelu':
+            if Z > 0:
+                dgZ = 1
+            else:
+                dgZ = 0.01
+        elif activateFcn == 'unity':
+            dgZ = 1
+        else:
+            # assumed Rectifier Linear Unit (ReLU)
+            if Z > 0:
+                dgZ = 1
+            else:
+                dgZ = 0
+            
+        return dgZ  # g'(Z)
+    
+    
+    # grab grad calc inputs from dictionaries
+#    W1 = parameters["W1"]
+#    b1 = parameters["b1"]
+    W2 = parameters["W2"]
+#    b2 = parameters["b2"]
+    
+    Z1 = cache["Z1"]
+    A1 = cache["A1"]  # from sigmoid
+#    Z2 = cache["Z2"]
+    A2 = cache["A2"]  # from softmax
+    
+    m = X.shape[1]
+        
+    # grads from cost function (softmax)
+    dZ2 = A2 - Y
+    
+    # 2nd layer grads
+    dW2 = (1/m)*np.dot(dZ2, A1.T)
+    db2 = (1/m)*np.sum(np.asarray(dZ2), axis=1, keepdims=True)
+    
+    # grads for activation function
+    activateFcnPRIME = fcnDerivative(Z1, activateFcn)
+
+    # 1st layer grads
+    dZ1 = np.multiply(np.dot(W2.T, dZ2),activateFcnPRIME)
+    dW1 = (1/m)*np.dot(dZ1, X.T)
+    db1 = (1/m)*np.sum(np.asarray(dZ1), axis=1, keepdims=True)
+    
+    # grads are stored in dict
+    grads = {"dW1": dW1,
+             "db1": db1,
+             "dW2": dW2,
+             "db2": db2}
+    
+    return grads
+
     
     
     
