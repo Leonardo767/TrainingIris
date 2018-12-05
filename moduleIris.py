@@ -246,7 +246,54 @@ def backprop(parameters, cache, activateFcn, X, Y):
     return grads
 
     
+
+# Update Params
+# ----------------
+def update(parameters, grads, learn_rate):
     
+    W1 = parameters["W1"]
+    b1 = parameters["b1"]
+    W2 = parameters["W2"]
+    b2 = parameters["b2"]
+
+    dW1 = grads["dW1"]
+    db1 = grads["db1"]
+    dW2 = grads["dW2"]
+    db2 = grads["db2"]
+
+    W1 = W1 - learn_rate*dW1
+    b1 = b1 - learn_rate*db1
+    W2 = W2 - learn_rate*dW2
+    b2 = b2 - learn_rate*db2
+    
+    parameters = {"W1": W1,
+                  "b1": b1,
+                  "W2": W2,
+                  "b2": b2}
+    
+    return parameters
+
+
+
+# Test Performance
+# ----------------
+def predict(parameters, activateFcn, X, Y, c):
+    m = X.shape[1]
+    
+    Z1 = forward(X, parameters["W1"], parameters["b1"])
+    A1 = activation(Z1, 'sigmoid')
+    Z2 = forward(A1, parameters["W2"], parameters["b2"])
+    A2 = softmax(Z2)
+    A2 = (A2 > 1/c)
+    diff = abs(A2 - Y)
+    wrong = 0
+    for i in range(diff.shape[1]):
+        if np.sum(diff[0:(c - 1), i]) != 0:
+            wrong += 1
+
+    accuracy = (m - wrong)/m*100
+    
+    return accuracy
     
     
     
