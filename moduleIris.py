@@ -7,7 +7,8 @@ Created on Sun Nov 25 20:30:16 2018
 
 """
 The following module will take the Iris dataset and convert it to a usable 
-shuffled input matrix for a neural network.
+shuffled input matrix for a neural network. This module will be used later 
+to construct the customizable Iris neural network model.
 
 Output training matrix of size:
     rows = features (Sepal Width, Sepal Length, Petal Width, Petal Length)
