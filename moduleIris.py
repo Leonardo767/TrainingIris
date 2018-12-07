@@ -297,15 +297,25 @@ def predict(parameters, activateFcn, X, Y, c):
     return accuracy
     
     
+def CrossValidateLoad(filename, k, i):
+    # k-Fold Cross Validation of model
+    # feeds different train/test data into model accordingly
+    testSetSize = 20  # this number doesn't matter, just used for adaptability
+    # we need this existing fcn to load and shuffle first
+    xTrain, yTrain, xTest, yTest = loadIrisData(filename, testSetSize)
+    # concatnate old train/test split (we don't care about split for CrossVal)
+    X = np.concatenate((xTrain, xTest), axis=1)
+    Y = np.concatenate((yTrain, yTest), axis=1)
+    
+    if X.shape[1] % k != 0:
+        print('Consider using a different k for CrossValidate')
+    
+    xTest = X[0:4, i*testSetSize:((i + 1)*testSetSize)]
+    xTrain = np.concatenate((X[0:4, 0:i*testSetSize], X[0:4, (i + 1)*testSetSize:(X.shape[1] - 1)]), axis=1)
+    yTest = Y[0:4, i*testSetSize:((i + 1)*testSetSize)]
+    yTrain = np.concatenate((Y[0:4, 0:i*testSetSize], Y[0:4, (i + 1)*testSetSize:(X.shape[1] - 1)]), axis=1)
+    
+    return xTrain, yTrain, xTest, yTest
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-
 
